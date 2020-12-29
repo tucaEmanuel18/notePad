@@ -31,16 +31,16 @@ using namespace std;
 
 extern int errno;
 
-void serverLoop(string serverAdr, int port, int backlog);
-void clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments);
+int serverLoop(string serverAdr, int port, int backlog);
+int clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments);
 
 int main()
 {
-	printf("Binding to %s:%d\n", SERVER_ADDRES, PORT);
-	serverLoop(SERVER_ADDRES, PORT, BACKLOG);
+	printf("Binding to %s:%d\n", SERVER_ADDRESS, PORT);
+	serverLoop(SERVER_ADDRESS, PORT, BACKLOG);
 }
 
-void serverLoop(string serverAdr, int port, int backlog)
+int serverLoop(string serverAdr, int port, int backlog)
 {
 	struct sockaddr_in server; // structura folosita de server
 	struct sockaddr_in from; // pentru a retine informatiile clientilor ce se conecteaza
@@ -69,12 +69,12 @@ void serverLoop(string serverAdr, int port, int backlog)
   	// atasam socketului adresa obtinuta
 	if(bind(sd, (struct sockaddr *) &server, sizeof(struct sockaddr)) == -1)
   	{
-  		pperror ("[server]Eroare la bind().\n");
+  		perror ("[server]Eroare la bind().\n");
         return errno;
   	} 
 
   	// punem serverul sa asculte 
-  	if(listen(st, BACKLOG) == -1)
+  	if(listen(sd, BACKLOG) == -1)
   	{
   		perror ("[SERVER] Error at listen! \n");
         return errno;
@@ -90,16 +90,21 @@ void serverLoop(string serverAdr, int port, int backlog)
   		int length = sizeof (from);
   		fflush (stdout);
 
-  		if( (cliendFd = accept(sd, (struct sockadd*) &from, (socklen_t *) &length)) < 0)
+  		if( (clientFd = accept(sd, (struct sockaddr*) &from, (socklen_t *) &length)) < 0)
   		{
   			perror ("[SERVER] Error at accept! \n");
             continue;
   		}
   		// s-a realizat conexiunea
-  		printf("[SERVER] Client with fd %d was connected\n", cliendFd);
+  		printf("[SERVER] Client with fd %d was connected\n", clientFd);
 
-  		new thread(clientLoop, cliendFd, documentsDict, openedDocuments);
+  		new thread(clientLoop, clientFd, documentsDict, openedDocuments);
 
   	}
 
+}
+
+int clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments)
+{
+  return 0;
 }
