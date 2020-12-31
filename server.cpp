@@ -14,6 +14,8 @@
 #include <sstream>
 #include <mutex>
 #include "document.h"
+#include "operation.h"
+#include "network_utils.h"
 
 using namespace std;
 
@@ -32,7 +34,7 @@ using namespace std;
 extern int errno;
 
 int serverLoop(string serverAdr, int port, int backlog);
-int clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments);
+void clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments);
 
 int main()
 {
@@ -104,7 +106,117 @@ int serverLoop(string serverAdr, int port, int backlog)
 
 }
 
-int clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments)
+void clientLoop(int clientFd, map<string, Document> *documentsDict, map<int, string>* openedDocuments)
 {
-  return 0;
+  printf("[SERVER THREAD] Thread with fd %d started \n", clientFd);
+  while(1)
+  {
+    string command;
+    try
+    {
+        command = Read(clientFd, 1024);
+    }
+    catch (std::ios_base::failure exception)
+    {
+      printf("[SERVER THREAD] %s \n", exception.what());
+      break;
+    }
+    printf("[SERVER THREAD] Command received from client: %s\n", command.c_str());
+
+    if(command == "list")
+    {
+      stringstream ss;
+      ss << documentsDict->size();
+      printf("%lu, %s\n", documentsDict->size(), ss.str().c_str());
+      Write(clientFd, ss.str()); // transmitem catre client numarul de documente existente
+
+      // transmitem documentele
+      for(auto it = documentsDict->begin(); it != documentsDict->end(); it++)
+      {
+        Write(clientFd, it->first);
+      }
+    }
+    else if(command.compare (0, 6, "create") == 0)
+          {
+            size_t namePosition = command.find(" ");
+            string documentName = command.substr(namePosition + 1);
+            printf("Document: %s\n", documentName.c_str());
+
+            if(documentsDict->find(documentName) != documentsDict->end())
+            {
+              Write(clientFd, "ERROR: File with the same name already exists!");
+              continue;
+            }
+            documentsDict->insert(make_pair(documentName, Document(documentName)));
+            Write(clientFd, "Ok!");
+          }
+    else if(command.compare(0, 6, "delete") == 0)
+          {
+            size_t namePosition = command.find(" ");
+            string documentName = command.substr(namePosition + 1);
+            printf("Document: %s\n", documentName.c_str());
+
+            auto doc = documentsDict->find(documentName);
+            if(doc != documentsDict->end())
+            {
+              documentsDict->erase(doc);
+            }
+            else
+            {
+              Write(clientFd, "ERROR: File doesn't exist!");
+              continue;
+            }
+            Write(clientFd, "Ok!");
+          }
+    else if(command.compare(0, 4, "open") == 0)
+          {
+            string space = " ";
+            size_t namePosition = command.find(space);
+            string documentName = command.substr(namePosition + 1);
+            printf("Document: %s\n", documentName.c_str());
+
+            auto doc = documentsDict->find(documentName);
+            if(doc != documentsDict->end())
+            {
+              if(doc->second.clients.size() < 2)
+              {
+                int lastOpId = doc->second.AddClient(clientFd);
+                openedDocuments->insert(make_pair(clientFd, documentName));
+
+                stringstream ss;
+                ss << lastOpId << " " << doc->second.documentText;
+                Write(clientFd, ss.str());
+              }
+              else
+              {
+                Write(clientFd, "ERROR: There are already two clients!");
+              }
+            }
+          }
+      else if(command.compare(0, 6, "insert") == 0 || command.compare(0, 6, "delete") == 0)
+            {
+              auto opened_doc = openedDocuments->find(clientFd);
+
+              if(opened_doc != openedDocuments->end())
+                {
+                  string docName = opened_doc->second;
+                  printf("docName: %s\n", docName.c_str());
+                  auto doc = documentsDict->find(docName);
+                  if(doc != documentsDict->end())
+                  {
+                    doc->second.ApplyOperation(clientFd, command);
+                  }
+                }
+            }
+  }
+  printf("Client disconected: %d\n", clientFd);
+  auto opened_doc = openedDocuments->find(clientFd);
+  if(opened_doc != openedDocuments->end())
+  {
+    string docName = opened_doc->second;
+    auto doc = documentsDict->find(docName);
+    doc->second.DisconnectClient(clientFd);
+    openedDocuments->erase(opened_doc);
+  }
+
 }

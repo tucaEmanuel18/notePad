@@ -1,0 +1,1 @@
+g++ -pthread -std=c++11 -DPORT=2000 -DSERVER_ADRESS='"127.0.0.1"' -DSERVER_BIND_ADDRESS='"127.0.0.1"' server.cpp operation.cpp document.cpp network_utils.cpp -o server

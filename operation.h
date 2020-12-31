@@ -15,7 +15,7 @@ public:
 	int serverId;
 	int prevId;
 
-	Operation(string message);
+	Operation(string command);
 	Operation(bool isInsert, int pos, int prevId, char chr = 255);
 
 	void applyOperation(string &text);
