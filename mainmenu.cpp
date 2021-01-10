@@ -15,7 +15,7 @@
 #include "mainmenu.h"
 
 
-MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
+MainMenu::MainMenu(QWidget *parent, ServerConnection* sv) : QWidget(parent)
 {
 
     QVBoxLayout *vBox = new QVBoxLayout;
@@ -44,9 +44,7 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     this->setLayout(vBox);
 
     vBox->setAlignment(Qt::AlignCenter);
-    this->server = new ServerConnection(MainMenu::PORT);
-    this->server->Connect();
-
+    this->server = sv;
     this->refreshTable();
 }
 

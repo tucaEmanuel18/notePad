@@ -12,17 +12,23 @@ TARGET = CollaborativeNotepad
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    connect_page.cpp \
         mainwindow.cpp \
     documentstable.cpp \
     mainmenu.cpp \
+    menu.cpp \
+    menupage.cpp \
     notepad.cpp \
     ServerConnection.cpp \
     operation.cpp \
     network_utils.cpp
 
 HEADERS  += mainwindow.h \
+    connect_page.h \
     documentstable.h \
     mainmenu.h \
+    menu.h \
+    menupage.h \
     notepad.h \
     hack_connect.h \
     network_utils.h \
@@ -31,4 +37,7 @@ HEADERS  += mainwindow.h \
     colors.h
 
 FORMS    += mainwindow.ui \
+    connect_page.ui \
+    menu.ui \
+    menupage.ui \
     notepad.ui

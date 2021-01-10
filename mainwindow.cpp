@@ -1,14 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mainmenu.h"
+#include "connect_page.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    MainMenu *menu = new MainMenu;
-    this->setCentralWidget(menu);
+    connect_page *c_page = new connect_page;
+    this->setCentralWidget(c_page);
     this->setWindowTitle("Collaborative Notepad");
 }
 

@@ -151,7 +151,7 @@ void Notepad::ClientThreadLoop() {
             messageBox.critical(0,"Error", error.what());
 
         }
-        if(msg.compare(0, 3, "add") ==0 || (msg.compare(0, 3, "del")) == 0) {
+        if(msg.compare(0, 6, "insert") ==0 || (msg.compare(0, 6, "delete")) == 0) {
             Operation operation = Operation(msg);
             if(updateOperation(this->history, operation)) {
                 this->toApply.push_back(operation);

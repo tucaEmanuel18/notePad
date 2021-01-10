@@ -5,6 +5,7 @@ Document::Document(const Document &doc)
 {
 	this->documentName = doc.documentName;
 	this->lastId = doc.lastId;
+	this->shared = doc.shared;
 	this->lastIdCount = doc.lastIdCount;
 	this->documentText = doc.documentText;
 	this->clients = doc.clients;
@@ -14,6 +15,7 @@ Document::Document(const Document &doc)
 Document::Document(string name)
 {
 	this->documentName = name;
+	this->shared = 1;
 	this->lastId = -1;
 	this->lastIdCount = 0;
 	this->lock.unlock();
@@ -43,13 +45,14 @@ void Document::DisconnectClient(int fd)
 			found == it;
 			break;
 		}
-
-		if(found != this->clients.end())
-		{
-			this->clients.erase(found);
-		}
-
 	}
+
+	if(found != this->clients.end())
+	{
+		this->clients.erase(found);
+	}
+
+	
 }
 
 void Document::ApplyOperation(int fd, string command)

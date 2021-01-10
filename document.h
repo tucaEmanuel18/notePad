@@ -22,6 +22,7 @@ public:
 	string documentText;
 	string documentName;
 	vector<Client> clients;
+	int shared;
 	int lastId;
 	int lastIdCount;
 	mutex lock;

@@ -45,11 +45,11 @@ string Operation::toStr()
 	stringstream ss;
 	if(this->isInsert)
 	{
-		ss << "insert";
+        ss << "insert";
 	}
 	else
 	{
-		ss << "delete";
+        ss << "delete";
 	}
 	ss << " " << this->id << " " << this->prevId << " " << this->serverId << " " << this->pos;
 	ss << " " << (int)this->chr;

@@ -33,7 +33,6 @@ protected:
     }
 
 private:
-    //static const int PORT = 8585;
     static const int PORT = 2000;
     ServerConnection *server;
     QString previousText;
