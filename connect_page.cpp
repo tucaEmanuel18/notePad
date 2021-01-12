@@ -3,29 +3,25 @@
 #include "menu.h"
 #include <QMessageBox>
 
-connect_page::connect_page(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::connect_page)
+connect_page::connect_page(QWidget *parent) : QWidget(parent), ui(new Ui::connect_page)
 {
     ui->setupUi(this);
-    this->setWindowTitle("New Document");
     this->server = new ServerConnection(connect_page::PORT);
-
-    int code;
-    if((code = this->server->Connect()) != 0)
+    this->setWindowTitle("Collaborative Notepad");
+    int cod;
+    if((cod = this->server->Connect()) != 0)
     {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error",strerror(code));
-        // close this window
+        // if the connection fail throw error and close window
+        QMessageBox msgForUser;
+        msgForUser.critical(0,"Error",strerror(cod));
         return;
     }
-    this->setWindowTitle("Collaborative Notepad");
 }
 
 connect_page::~connect_page()
 {
-    this->server->CloseServerConnection();
     delete ui;
+    this->server->CloseServerConnection();
 }
 
 void connect_page::on_signButton_clicked()
@@ -39,16 +35,16 @@ void connect_page::on_signButton_clicked()
     }
     else
     {
-        string createCommand = "sign ";
-        createCommand += userName.toStdString();
-        createCommand += " ";
-        createCommand += password.toStdString();
-        this->server->WriteCommand(createCommand);
+        string signCommand = "sign ";
+        signCommand += userName.toStdString();
+        signCommand += " ";
+        signCommand += password.toStdString();
+        this->server->WriteCommand(signCommand);
 
-        string answer;
-        answer = this->server->ReadCommand();
+        string response;
+        response = this->server->ReadCommand();
         string errorMessage = "ERROR";
-        std::size_t found = answer.find(errorMessage);
+        std::size_t found = response.find(errorMessage);
 
         if(found == 0)
         {
@@ -59,7 +55,6 @@ void connect_page::on_signButton_clicked()
         {
             QMessageBox::information(this, "SignIn", "The new account was created!");
         }
-
     }
 }
 
@@ -75,29 +70,28 @@ void connect_page::on_logButton_clicked()
     else
     {
 
-        string createCommand = "log ";
-        createCommand += userName.toStdString();
-        createCommand += " ";
-        createCommand += password.toStdString();
-        this->server->WriteCommand(createCommand);
+        string logCommand = "log ";
+        logCommand += userName.toStdString();
+        logCommand += " ";
+        logCommand += password.toStdString();
+        this->server->WriteCommand(logCommand);
 
-        string answer;
-        answer = this->server->ReadCommand();
-        string errorMessage = "ERROR";
-        std::size_t found = answer.find(errorMessage);
+        string response;
+        response = this->server->ReadCommand();
+        string errMsg = "ERROR";
+        std::size_t found = response.find(errMsg);
 
         if(found == 0)
         {
-            char ch = answer[5];
-            QMessageBox messageBox;
+            char ch = response[5];
+            QMessageBox msgForUser;
             if(ch == '1')
             {
-                messageBox.critical(0, "Error", " This name doesn't exists! \n If you don't have accont please sign-in!");
+                msgForUser.critical(0, "Error", " This name doesn't exists! \n If you don't have accont please sign-in!");
             }
             else
             {
-                messageBox.critical(0, "Error", " The password is wrong!");
-
+                msgForUser.critical(0, "Error", " The password is wrong!");
             }
         }
         else
@@ -106,7 +100,6 @@ void connect_page::on_logButton_clicked()
             menuWidget->show();
             hide();
         }
-
     }
 }
 

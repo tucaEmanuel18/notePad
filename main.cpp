@@ -1,4 +1,3 @@
-#include "mainwindow.h"
 #include "connect_page.h"
 #include <QApplication>
 

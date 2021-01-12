@@ -14,9 +14,7 @@
 #include <QAbstractItemModel>
 #include "notepad.h"
 #include "connect_page.h"
-menu::menu(QWidget *parent, ServerConnection* sv) :
-    QWidget(parent),
-    ui(new Ui::menu)
+menu::menu(QWidget *parent, ServerConnection* sv) : QWidget(parent), ui(new Ui::menu)
 {
     ui->setupUi(this);
     this->setWindowTitle("Menu");
@@ -183,15 +181,23 @@ void menu::onSharePressed(bool enabled)
                 shareCommand += result.toStdString();
                 this->server->WriteCommand(shareCommand);
 
-                string answer;
-                answer = this->server->ReadCommand();
+                string response;
+                response = this->server->ReadCommand();
                 string errorMessage = "ERROR";
-                std::size_t found = answer.find(errorMessage);
+                std::size_t found = response.find(errorMessage);
 
                 if(found == 0)
                 {
-                   QMessageBox messageBox;
-                   messageBox.critical(0, "Error", "There is no user with the specified username or specified user has already acces to this file.");
+                    char ch = response[5];
+                    QMessageBox msgForUser;
+                    if(ch == '1')
+                    {
+                        msgForUser.critical(0, "Error", "There is no user with the specified username.!");
+                    }
+                    else
+                    {
+                        msgForUser.critical(0, "Error", "The specified user has already access to this file.");
+                    }
                 }
             }
             else if(ok)

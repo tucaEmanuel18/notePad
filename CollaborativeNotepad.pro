@@ -23,7 +23,6 @@ HEADERS  += \
     connect_page.h \
     menu.h \
     notepad.h \
-    hack_connect.h \
     network_utils.h \
     ServerConnection.h \
     operation.h \

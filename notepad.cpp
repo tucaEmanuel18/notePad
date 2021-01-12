@@ -1,4 +1,3 @@
-#include <string.h>
 #include <QFileDialog>
 #include <QString>
 #include <QTextStream>
@@ -6,11 +5,11 @@
 #include <QPlainTextEdit>
 #include <QMessageBox>
 #include <sstream>
+#include <string.h>
 #include <thread>
 #include "ServerConnection.h"
 #include "notepad.h"
 #include "ui_notepad.h"
-#include "hack_connect.h"
 #include "operation.h"
 
 using namespace std;
@@ -23,7 +22,7 @@ Notepad::Notepad(QWidget *parent) : QWidget(parent), ui(new Ui::Notepad)
     this->server = new ServerConnection(Notepad::PORT);
     this->lastId = 0;
     connect(this, SIGNAL(signal_peerOp()), this, SLOT(slot_peerOp()));
-
+    connect(ui->downloadButton, SIGNAL(clicked(bool)), this, SLOT(on_downloadButton()));
     int cod;
     if((cod = this->server->Connect()) != 0)
     {
@@ -58,9 +57,9 @@ string Notepad::Open(string docName)
         auto pos = responseMsg.find(" ");
         string lastIdStr = responseMsg.substr(0, pos);
         string content = responseMsg.substr(pos + 1);
-        this->ui->textEdit->setReadOnly(true);
-        this->ui->textEdit->setText(QString(content.c_str()));
-        this->ui->textEdit->setReadOnly(false);
+        this->ui->editBox->setReadOnly(true);
+        this->ui->editBox->setText(QString(content.c_str()));
+        this->ui->editBox->setReadOnly(false);
 
         stringstream ss(lastIdStr);
         ss >> this->lastId;
@@ -69,7 +68,7 @@ string Notepad::Open(string docName)
 }
 
 
-void Notepad::on_pushButton_clicked()
+void Notepad::on_downloadButton()
 {
     QString docName;
     QString defDocName = windowTitle();
@@ -79,18 +78,18 @@ void Notepad::on_pushButton_clicked()
     if(saveDoc.open(QFile::WriteOnly | QFile::Text))
     {
         QTextStream content(&saveDoc);
-        content << ui->textEdit->toPlainText();
+        content << ui->editBox->toPlainText();
         saveDoc.flush();
         saveDoc.close();
     }
 }
 
-void Notepad::on_textEdit_textChanged()
+void Notepad::on_editBox_textChanged()
 {
     QString currentContent;
-    currentContent = ui->textEdit->toPlainText();
+    currentContent = ui->editBox->toPlainText();
 
-    if(this->ui->textEdit->isReadOnly())
+    if(this->ui->editBox->isReadOnly())
     {
         this->previousContent = currentContent;
         return;
@@ -188,8 +187,8 @@ void Notepad::PeerThreadLoop()
 
 void Notepad::slot_peerOp()
 {
-    this->ui->textEdit->setReadOnly(true);
-    QString qContent = this->ui->textEdit->toPlainText();
+    this->ui->editBox->setReadOnly(true);
+    QString qContent = this->ui->editBox->toPlainText();
     string content = qContent.toStdString();
 
     while(!this->toApply.empty())
@@ -197,13 +196,15 @@ void Notepad::slot_peerOp()
         Operation operation = *this->toApply.begin();
         if (updateOperation(this->history, operation, true))
         {
-            operation.applyOperation(content); //apply operation on current text
+            //apply operation on current text
+            operation.applyOperation(content);
         }
         this->lastId = operation.id;
         this->toApply.pop_front();
     }
 
-    this->ui->textEdit->setText(QString(content.c_str()));
-    this->ui->textEdit->setReadOnly(false); //allow user to continue editing
+    this->ui->editBox->setText(QString(content.c_str()));
+    //allow user to continue editing
+    this->ui->editBox->setReadOnly(false);
 }
 

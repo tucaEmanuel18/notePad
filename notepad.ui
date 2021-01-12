@@ -17,14 +17,14 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="downloadButton">
        <property name="text">
         <string>Download</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QTextEdit" name="textEdit">
+      <widget class="QTextEdit" name="editBox">
        <property name="font">
         <font>
          <weight>50</weight>

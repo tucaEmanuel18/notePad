@@ -43,8 +43,8 @@ private:
     void PeerThreadLoop();
 
 private slots:
-    void on_textEdit_textChanged();
-    void on_pushButton_clicked();
+    void on_editBox_textChanged();
+    void on_downloadButton();
 
     void slot_peerOp();
 
