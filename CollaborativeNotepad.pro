@@ -14,8 +14,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
     connect_page.cpp \
         mainwindow.cpp \
-    documentstable.cpp \
-    mainmenu.cpp \
     menu.cpp \
     menupage.cpp \
     notepad.cpp \
@@ -25,8 +23,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     connect_page.h \
-    documentstable.h \
-    mainmenu.h \
     menu.h \
     menupage.h \
     notepad.h \

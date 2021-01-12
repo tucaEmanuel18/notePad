@@ -19,6 +19,7 @@ connect_page::connect_page(QWidget *parent) :
         // close this window
         return;
     }
+    this->setWindowTitle("Collaborative Notepad");
 }
 
 connect_page::~connect_page()
@@ -101,8 +102,9 @@ void connect_page::on_logButton_clicked()
         }
         else
         {
-            MenuPage *menu = new MenuPage(nullptr, this->server);
-            menu->show();
+            menu *menuWidget = new menu(nullptr, this->server);
+            menuWidget->show();
+            hide();
         }
 
     }

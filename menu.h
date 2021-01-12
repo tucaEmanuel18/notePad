@@ -2,7 +2,6 @@
 #define MENU_H
 
 #include <QWidget>
-#include "documentstable.h"
 #include "ServerConnection.h"
 #include <QTableWidgetItem>
 #include <vector>
@@ -29,15 +28,15 @@ private:
     static const int PORT = 2000;
 
 
+public:
 signals:
-
+    void logOut();
 public slots:
     void onCreatePressed(bool enabled);
     void onOpenPressed(bool enabled);
     void onDeletePressed(bool enabled);
     void onSharePressed(bool enabled);
     void refreshTable();
-private slots:
     void on_logOutButton_clicked();
 };
 

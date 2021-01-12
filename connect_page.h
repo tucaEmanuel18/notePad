@@ -1,6 +1,5 @@
 #ifndef CONNECT_PAGE_H
 #define CONNECT_PAGE_H
-#include "documentstable.h"
 #include "ServerConnection.h"
 #include <QTableWidgetItem>
 #include <QWidget>

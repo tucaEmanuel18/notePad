@@ -2,11 +2,11 @@
 #define MENUPAGE_H
 
 #include <QMainWindow>
-#include "documentstable.h"
 #include "ServerConnection.h"
 #include <QTableWidgetItem>
 #include <QTableWidget>
 #include <vector>
+#include <menu.h>
 
 using std::vector;
 using std::string;
@@ -25,6 +25,13 @@ public:
 
 private:
     Ui::MenuPage *ui;
+    menu *menuWidget;
+public:
+signals:
+    void logOut();
+
+private slots:
+   void on_menuLogOut();
 };
 
 #endif // MENUPAGE_H

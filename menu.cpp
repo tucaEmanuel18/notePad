@@ -12,16 +12,18 @@
 #include <QTableWidgetItem>
 #include <QErrorMessage>
 #include <QAbstractItemModel>
-#include "documentstable.h"
 #include "notepad.h"
+#include "connect_page.h"
 menu::menu(QWidget *parent, ServerConnection* sv) :
     QWidget(parent),
     ui(new Ui::menu)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Menu");
     QStringList list;
     list << "Documents";
     ui->documentsTable->setColumnCount(1);
+    ui->documentsTable->setColumnWidth(0, 100);
     ui->documentsTable->setHorizontalHeaderLabels(list);
     ui->documentsTable->setRowCount(5);
 
@@ -229,6 +231,7 @@ void menu::refreshTable()
     }
 
     ui->documentsTable->setRowCount(this->documents.size());
+    ui->documentsTable->setColumnWidth(0, 500);
     for(unsigned int i = 0; i < this->documents.size(); i++){
         QTableWidgetItem *item = new QTableWidgetItem(this->documents[i]->c_str());
         ui->documentsTable->setItem(i, 0, item);
@@ -238,5 +241,7 @@ void menu::refreshTable()
 
 void menu::on_logOutButton_clicked()
 {
-
+    connect_page *c_page = new connect_page();
+    c_page->show();
+    close();
 }
