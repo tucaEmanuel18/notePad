@@ -19,19 +19,18 @@ struct Client
 class Document
 {
 public:
-	string documentText;
-	string documentName;
+	string content;
+	string name;
 	vector<Client> clients;
-	int shared;
-	int lastId;
-	int lastIdCount;
 	mutex lock;
+	int shared;
+	int prevId;
+	int prevIdCount;
+	
 
-	Document(const Document &doc);
 	Document(string name);
-
-	int AddClient(int fd);
-	void RemoveClient(int fd);
-
+	Document(const Document &doc);
 	void ApplyOperation(int fd, string command);
+	void RemoveClient(int fd);
+	int AddClient(int fd);
 };

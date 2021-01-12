@@ -8,111 +8,138 @@ using namespace std;
 
 Operation::Operation(string command)
 {
-	string opName;
-	stringstream ss(command);
-	int chrId;
-	ss >> opName >> this->id >> this->prevId >> this->serverId >> this->pos >> chrId;
-	this->chr = (char) chrId;
-	this->isInsert = opName == "insert";
+	string operationName;
+    int characterId;
+
+	stringstream msg(command);
+	msg >> operationName >> this->id >> this->prevId >> this->serverId >> this->position >> characterId;
+	this->character = (char) characterId;
+	this->isInsert = operationName == "insert";
 }
 
-Operation::Operation(bool isInsert, int prevId, int pos, char chr)
+Operation::Operation(bool isInsert, int prevId, int position, char character)
 {
-	this->prevId = prevId;
-    this->id = 0;
-    this->serverId = 0;
     this->isInsert = isInsert;
-    this->pos = pos;
-    this->chr = chr;
+	this->prevId = prevId;
+    this->position = position;
+    this->serverId = 0;
+    this->id = 0;
+    this->character = character;
 }
 
 void Operation::applyOperation(string &text)
 {
 	if(isInsert)
 	{
-		string toAdd = "";
-		toAdd += this->chr;
-		text.insert(this->pos, toAdd);
+		string toInsert = "";
+		toInsert += this->character;
+		text.insert(this->position, toInsert);
 	}
 	else
 	{
-		text.erase(this->pos, 1);
+		text.erase(this->position, 1);
 	}
 }
 
 string Operation::toStr()
 {
-	stringstream ss;
+	stringstream msg;
 	if(this->isInsert)
 	{
-        ss << "insert";
+        msg << "insert";
 	}
 	else
 	{
-        ss << "delete";
+        msg << "delete";
 	}
-	ss << " " << this->id << " " << this->prevId << " " << this->serverId << " " << this->pos;
-	ss << " " << (int)this->chr;
-	return ss.str();
+	msg << " " << this->id << " " << this->prevId << " " << this->serverId << " " << this->position;
+	msg << " " << (int)this->character;
+	return msg.str();
 }
 
-bool updateOperation(list<Operation> &history, Operation &operation, bool secondCall)
+bool transformOperation(list<Operation> &pastOpList, Operation &thisOp, bool secondCall)
 {
-	bool deleteCase = false;
-
-    if (!secondCall) {
-        while(!history.empty() && history.front().id <= operation.prevId) {
-            history.pop_front(); //indiferent de operatiile care vin de la clientul vecin, daca au id mai mic, nu influenteaza operatia asta si cele ce urmeaza
+	bool delCase = false;
+    if (!secondCall) 
+    {
+        while(!pastOpList.empty() && pastOpList.front().id <= thisOp.prevId) 
+        {
+            //operatiile care vin de la celalalt client, daca au id mai mic, nu influenteaza nici operatia aceasta si nici pe cele ce urmeaza
+            pastOpList.pop_front(); 
         }
     }
 
-    for(list<Operation>::iterator it=history.begin(); it != history.end(); ++it) {
-        Operation op = *it;
+    for(auto it = pastOpList.begin(); it != pastOpList.end(); ++it) 
+    {
+        Operation otherOp = *it;
 
-        if(op.isInsert) {
-            if(operation.isInsert) {
-                if(op.pos == operation.pos) {
-                    if(op.id > operation.id) {
-                        operation.pos++;
+        if(otherOp.isInsert) 
+        {
+            if(thisOp.isInsert) 
+            {   
+                //daca ambele sunt insert verificam pozitiile
+                if(otherOp.position == thisOp.position) 
+                {
+                    if(otherOp.id > thisOp.id) 
+                    {
+                        thisOp.position++;
                     }
-                    else {
-                        if(op.id == operation.id) {
-                            if(op.serverId > operation.serverId) {
-                                operation.pos++;
+                    else 
+                    {
+                        if(otherOp.id == thisOp.id) 
+                        {
+                            if(otherOp.serverId > thisOp.serverId) 
+                            {
+                                thisOp.position++;
                             }
                         }
                     }
-                } else {
-                    if(op.pos < operation.pos) {
-                        operation.pos++;
+                } 
+                else 
+                {
+                    if(otherOp.position < thisOp.position) 
+                    {
+                        thisOp.position++;
                     }
                 }
-            } else {
-                if(op.pos <= operation.pos) {
-                    operation.pos++;
+            } 
+            else 
+            {
+                if(otherOp.position <= thisOp.position)
+                {
+                    thisOp.position++;
                 }
             }
-        } else {
-            if(!operation.isInsert) {
-                if(op.pos == operation.pos) {
-                    deleteCase = true;
+        } 
+        else 
+        {
+            if(!thisOp.isInsert) 
+            {
+                if(otherOp.position == thisOp.position)
+                {
+                    delCase = true;
                     break;
-                } else {
-                    if(op.pos < operation.pos) {
-                        operation.pos--;
+                } 
+                else 
+                {
+                    if(otherOp.position < thisOp.position) 
+                    {
+                        thisOp.position--;
                     }
                 }
-            } else {
-                if(operation.isInsert) {
-                    if(op.pos < operation.pos) {
-                        operation.pos--;
+            }
+            else 
+            {
+                if(thisOp.isInsert)
+                {
+                    if(otherOp.position < thisOp.position) 
+                    {
+                        thisOp.position--;
                     }
                 }
             }
         }
-
-        operation.prevId = op.id;
+        thisOp.prevId = otherOp.id;
     }
-
-    return !deleteCase;
+    return !delCase;
 }

@@ -8,19 +8,19 @@ using namespace std;
 class Operation
 {
 public:
-	char chr;
-	int pos;
+	char character;
+	int position;
 	bool isInsert;
 	int id;
 	int serverId;
 	int prevId;
 
 	Operation(string command);
-	Operation(bool isInsert, int pos, int prevId, char chr = 255);
+    Operation(bool isInsert, int position, int prevId, char character = 255);
 
 	void applyOperation(string &text);
 	string toStr();
 };
 
-extern bool updateOperation(list<Operation> &history, Operation &operation, bool secondCall = false);
+extern bool transformOperation(list<Operation> &pastOpList, Operation &thisOp, bool secondCall = false);
 #endif 

@@ -7,4 +7,4 @@
 using namespace std;
 
 extern int Send(int fd, string command);
-extern string Receive(int fd, int message_max_size = 1024);
+extern string Receive(int fd, int maxSize = 1024);

@@ -297,7 +297,7 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
                 openedDocuments->insert(make_pair(clientFd, documentName));
 
                 stringstream ss;
-                ss << lastOpId << " " << doc->second.documentText;
+                ss << lastOpId << " " << doc->second.content;
                 Send(clientFd, ss.str());
               }
               else

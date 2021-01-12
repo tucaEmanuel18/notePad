@@ -14,7 +14,7 @@ int Send(int fd, string command)
 	return 0;
 }
 
-string Receive(int fd, int messageMaxSize)
+string Receive(int fd, int maxSize)
 {
     int length;
     int readNrOfBytes;
@@ -22,12 +22,12 @@ string Receive(int fd, int messageMaxSize)
 	{
 		throw(std::ios_base::failure(strerror(errno)));
 	}
-    char* buffer = new char[messageMaxSize];
+    char* buffer = new char[maxSize];
     string message = "";
 	int nrOfReadBytes = 0;
     while(nrOfReadBytes < length)
 	{	
-        int readNrOfBytes = read(fd, buffer, min(messageMaxSize - 1, length - nrOfReadBytes));
+        int readNrOfBytes = read(fd, buffer, min(maxSize - 1, length - nrOfReadBytes));
         if(readNrOfBytes <= 0)
 		{
 			delete[] buffer;

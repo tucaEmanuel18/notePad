@@ -149,7 +149,7 @@ void Notepad::PeerThreadLoop()
         if(fromPeerMsg.compare(0, 6, "insert") == 0 || (fromPeerMsg.compare(0, 6, "delete")) == 0)
         {
             Operation operation = Operation(fromPeerMsg);
-            if(updateOperation(this->history, operation))
+            if(transformOperation(this->history, operation))
             {
                 this->toApply.push_back(operation);
                 this->signal_peerOp();
@@ -157,10 +157,10 @@ void Notepad::PeerThreadLoop()
         }
         else
         {
-            stringstream ss(fromPeerMsg);
+            stringstream msg(fromPeerMsg);
             bool hasPeer;
             int serverId, id;
-            ss >> id >> serverId >> hasPeer;
+            msg >> id >> serverId >> hasPeer;
 
             Operation op = *this->waitingOpList.begin();
             op.id = id;
@@ -190,7 +190,7 @@ void Notepad::slot_peerOp()
     while(!this->toApply.empty())
     {
         Operation operation = *this->toApply.begin();
-        if (updateOperation(this->history, operation, true))
+        if (transformOperation(this->history, operation, true))
         {
             //apply operation on current text
             operation.applyOperation(content);

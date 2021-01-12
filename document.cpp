@@ -1,104 +1,103 @@
 #include "document.h"
 #include "network_utils.h"
 
+Document::Document(string name)
+{
+	this->name = name;
+	this->shared = 1;
+	this->prevId = -1;
+	this->prevIdCount = 0;
+	this->lock.unlock();
+}
+
 Document::Document(const Document &doc)
 {
-	this->documentName = doc.documentName;
-	this->lastId = doc.lastId;
+	this->name = doc.name;
+	this->prevId = doc.prevId;
 	this->shared = doc.shared;
-	this->lastIdCount = doc.lastIdCount;
-	this->documentText = doc.documentText;
+	this->prevIdCount = doc.prevIdCount;
+	this->content = doc.content;
 	this->clients = doc.clients;
 	this->lock.unlock();
 }
 
-Document::Document(string name)
+void Document::ApplyOperation(int fd, string command)
 {
-	this->documentName = name;
-	this->shared = 1;
-	this->lastId = -1;
-	this->lastIdCount = 0;
-	this->lock.unlock();
+	Operation operation(command);
+	printf("Apply Operation: %s, %c\n", command.c_str(), (int) operation.character);
+
+	bool delCase = false;
+
+	this->lock.lock();
+	operation.id = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
+
+	if(operation.id > prevId)
+	{
+		prevId = operation.id;
+		prevIdCount = 0;
+	}
+	operation.serverId = prevIdCount;
+	prevIdCount++;
+
+	bool hasPeer = false;
+	for(auto client : this->clients)
+	{
+		if(client.fd == fd) // in cazul clientului care a efectuat operatia
+		{
+			client.history.push_back(operation);
+		}
+		else
+		{
+			Send(client.fd, operation.toStr()); // trimitem celuilalt client operatia
+			printf("Send op to other client: %d %s\n", client.fd, operation.toStr().c_str());
+			hasPeer = true;
+
+			if(!transformOperation(client.history, operation))
+			{
+				delCase = true; // dublu delete
+			}
+		}
+
+	}
+	if(!delCase)
+	{
+		operation.applyOperation(this->content);
+	}
+	this->lock.unlock(); // serverul nu accepta alta operatie in timpul updatului
+	stringstream ss;
+	ss << operation.id << " "<<operation.serverId << " " << hasPeer;
+	Send(fd, ss.str());
+}
+
+void Document::RemoveClient(int fd)
+{
+	auto foundClient = this->clients.end();
+	for(auto iterator = this->clients.begin(); iterator != this->clients.end(); iterator++)
+	{
+		if(iterator->fd == fd)
+		{
+			foundClient = iterator;
+			break;
+		}
+	}
+	if(foundClient != this->clients.end())
+	{
+		this->clients.erase(foundClient);
+	}
 }
 
 int Document::AddClient(int fd)
 {
-	Client new_client;
-	new_client.fd = fd;
+	Client newClient;
+	newClient.fd = fd;
 	int prevId = 0;
 	if(!this->clients.empty())
 	{
 		prevId = this->clients[0].history.back().id;
 	}
-	this->clients.push_back(new_client);
+	this->clients.push_back(newClient);
 
 	return prevId;
 }
 
-void Document::RemoveClient(int fd)
-{
-	auto found = this->clients.end();
-	for(auto it = this->clients.begin(); it != this->clients.end(); it++)
-	{
-		if(it->fd == fd)
-		{
-			found = it;
-			break;
-		}
-	}
-	if(found != this->clients.end())
-	{
-		this->clients.erase(found);
-	}
 
-	
-}
-
-void Document::ApplyOperation(int fd, string command)
-{
-	Operation op(command);
-	printf("Apply Operation: %s, %c\n", command.c_str(), (int) op.chr);
-
-	bool deleteCase = false;
-
-	this->lock.lock();
-	op.id = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
-
-	if(op.id > lastId)
-	{
-		lastId = op.id;
-		lastIdCount = 0;
-	}
-	op.serverId = lastIdCount;
-	lastIdCount++;
-
-	bool hasPeer = false;
-
-	for(auto client : this->clients)
-	{
-		if(client.fd == fd) // in cazul clientului care a efectuat operatia
-		{
-			client.history.push_back(op);
-		}
-		else
-		{
-			Send(client.fd, op.toStr()); // trimitem celuilalt client operatia
-			printf("Send op to other client: %d %s\n", client.fd, op.toStr().c_str());
-			hasPeer = true;
-
-			if(!updateOperation(client.history, op))
-			{
-				deleteCase = true; // dublu delete
-			}
-		}
-
-	}
-	if(!deleteCase)
-	{
-		op.applyOperation(this->documentText);
-	}
-	this->lock.unlock(); // serverul nu accepta alta operatie in timpul updatului
-	stringstream ss;
-	ss << op.id << " "<<op.serverId << " " << hasPeer;
-	Send(fd, ss.str());
-}
