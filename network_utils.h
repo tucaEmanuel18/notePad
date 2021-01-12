@@ -6,5 +6,5 @@
 
 using namespace std;
 
-extern int Write(int fd, string command);
-extern string Read(int fd, int message_max_size = 1024);
+extern int Send(int fd, string command);
+extern string Receive(int fd, int message_max_size = 1024);

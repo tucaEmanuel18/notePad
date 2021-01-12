@@ -13,7 +13,6 @@
 
 using std::string;
 
-
 const char* ServerConnection::ADDR = "0.0.0.0";
 
 
@@ -36,17 +35,16 @@ int ServerConnection::Connect()
     server.sin_port = htons (port);
 
     return connect (this->fd, (const struct sockaddr *) &server, (socklen_t)sizeof (server)) == -1 ? errno : 0;
-
 }
 
-int ServerConnection::WriteCommand(string command) {
+int ServerConnection::SendCommand(string command) {
 
-    return Write(this->fd, command);
+    return Send(this->fd, command);
 }
 
-string ServerConnection::ReadCommand(int MESSAGE_MAX_CHUNK_SIZE) {
+string ServerConnection::ReceiveCommand(int MESSAGE_MAX_CHUNK_SIZE) {
 
-    return Read(this->fd, MESSAGE_MAX_CHUNK_SIZE);
+    return Receive(this->fd, MESSAGE_MAX_CHUNK_SIZE);
 
 }
 

@@ -39,10 +39,10 @@ void connect_page::on_signButton_clicked()
         signCommand += userName.toStdString();
         signCommand += " ";
         signCommand += password.toStdString();
-        this->server->WriteCommand(signCommand);
+        this->server->SendCommand(signCommand);
 
         string response;
-        response = this->server->ReadCommand();
+        response = this->server->ReceiveCommand();
         string errorMessage = "ERROR";
         std::size_t foundError = response.find(errorMessage);
 
@@ -74,10 +74,10 @@ void connect_page::on_logButton_clicked()
         logCommand += userName.toStdString();
         logCommand += " ";
         logCommand += password.toStdString();
-        this->server->WriteCommand(logCommand);
+        this->server->SendCommand(logCommand);
 
         string response;
-        response = this->server->ReadCommand();
+        response = this->server->ReceiveCommand();
         std::size_t foundError = response.find("ERROR");
 
         if(foundError == 0)

@@ -30,7 +30,7 @@ signals:
 protected:
     void closeEvent ( QCloseEvent * event )
     {
-        this->server->WriteCommand("close");
+        this->server->SendCommand("close");
         this->server->CloseServerConnection();
     }
 private:

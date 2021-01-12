@@ -44,10 +44,10 @@ void menu::CreateClicked(bool enabled)
         {
             string createCommand = "create ";
             createCommand += inputResult.toStdString();
-            this->server->WriteCommand(createCommand);
+            this->server->SendCommand(createCommand);
 
             string response;
-            response = this->server->ReadCommand();
+            response = this->server->ReceiveCommand();
             std::size_t foundError = response.find("ERROR");
             if(foundError == 0)
             {
@@ -123,7 +123,7 @@ void menu::DeleteClicked(bool enabled)
         QModelIndex index = select.at(0);
         QString docName = ui->documentsTable->model()->data(index).toString();
         deleteCommand += docName.toStdString();
-        this->server->WriteCommand(deleteCommand);
+        this->server->SendCommand(deleteCommand);
 
         int rowIndex = index.row();
         delete this->documents[rowIndex];
@@ -163,9 +163,9 @@ void menu::ShareClicked(bool enabled)
                 shareCommand += " ";
                 // add the friend userName
                 shareCommand += inputResult.toStdString();
-                this->server->WriteCommand(shareCommand);
+                this->server->SendCommand(shareCommand);
 
-                string response = this->server->ReadCommand();
+                string response = this->server->ReceiveCommand();
                 size_t foundError = response.find("ERROR");
                 if(foundError == 0)
                 {
@@ -198,16 +198,16 @@ void menu::refreshTable()
     this->documents.clear();
 
     int errCod;
-    if ((errCod = this->server->WriteCommand("list")) != 0)
+    if ((errCod = this->server->SendCommand("list")) != 0)
     {
         QMessageBox msgForUser;
         msgForUser.critical(0,"Error", strerror(errCod));
         return;
     }
-    int length = atoi(this->server->ReadCommand().c_str());
+    int length = atoi(this->server->ReceiveCommand().c_str());
     for(int i = 0; i < length; ++i)
     {
-        string docName = this->server->ReadCommand();
+        string docName = this->server->ReceiveCommand();
         string * ptrDocName = new string;
         ptrDocName->append(docName);
         this->documents.push_back(ptrDocName);

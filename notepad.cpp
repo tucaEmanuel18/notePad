@@ -1,3 +1,5 @@
+#include "notepad.h"
+#include "ui_notepad.h"
 #include <QFileDialog>
 #include <QString>
 #include <QTextStream>
@@ -6,8 +8,6 @@
 #include <string.h>
 #include <thread>
 #include "ServerConnection.h"
-#include "notepad.h"
-#include "ui_notepad.h"
 #include "operation.h"
 
 using namespace std;
@@ -39,9 +39,9 @@ string Notepad::Open(string docName)
 {
     // build and send command for server
     string openCommand = "open " + docName;
-    this->server->WriteCommand(openCommand);
+    this->server->SendCommand(openCommand);
 
-    string responseMsg = this->server->ReadCommand();
+    string responseMsg = this->server->ReceiveCommand();
 
     // receive response from server
     std::size_t foundError = responseMsg.find("ERROR");
@@ -99,11 +99,11 @@ void Notepad::on_editBox_textChanged()
         {
             Operation deleteOp = Operation(false, this->lastId, index, this->previousContent[index].toLatin1());
             this->waitingOpList.push_back(deleteOp);
-            this->server->WriteCommand(deleteOp.toStr());
+            this->server->SendCommand(deleteOp.toStr());
 
             Operation insertOp = Operation(true, this->lastId, index, currentContent[index].toLatin1());
             this->waitingOpList.push_back(insertOp);
-            this->server->WriteCommand(insertOp.toStr());
+            this->server->SendCommand(insertOp.toStr());
         }
     }
 
@@ -114,7 +114,7 @@ void Notepad::on_editBox_textChanged()
         {
             Operation deleteOp = Operation(false, this->lastId, currentContent.size(), this->previousContent[index].toLatin1());
             this->waitingOpList.push_back(deleteOp);
-            this->server->WriteCommand(deleteOp.toStr());
+            this->server->SendCommand(deleteOp.toStr());
         }
     }
     if(this->previousContent.size() < currentContent.size())
@@ -124,7 +124,7 @@ void Notepad::on_editBox_textChanged()
         {
             Operation insertOp = Operation(true, this->lastId, index, currentContent[index].toLatin1());
             this->waitingOpList.push_back(insertOp);
-            this->server->WriteCommand(insertOp.toStr());
+            this->server->SendCommand(insertOp.toStr());
         }
 
     }
@@ -138,7 +138,7 @@ void Notepad::PeerThreadLoop()
         string fromPeerMsg;
         try
         {
-            fromPeerMsg = this->server->ReadCommand();
+            fromPeerMsg = this->server->ReceiveCommand();
         }
         catch(std::ios_base::failure err)
         {

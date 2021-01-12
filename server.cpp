@@ -123,7 +123,7 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
     string command;
     try
     {
-        command = Read(clientFd, 1024);
+        command = Receive(clientFd, 1024);
     }
     catch (std::ios_base::failure exception)
     {
@@ -142,14 +142,14 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
 
       if(clientsDict->find(userName) != clientsDict->end())
       {
-        Write(clientFd, "ERROR: This username already exists!");
+        Send(clientFd, "ERROR: This username already exists!");
         continue;
       }
 
       clientsDict->insert(make_pair(userName, password));
       vector<string> accesDocument;
       clientAcces->insert(make_pair(userName, accesDocument));
-      Write(clientFd, "Ok!");
+      Send(clientFd, "Ok!");
     }
     else if(command.compare(0, 3, "log") == 0)
     {
@@ -163,18 +163,18 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
       auto findUser = clientsDict->find(userName);
       if(findUser == clientsDict->end())
       {
-        Write(clientFd, "ERROR1: This username doesn't exists!");
+        Send(clientFd, "ERROR1: This username doesn't exists!");
         continue;
       }
 
       if(password.compare(findUser->second) == 0)
       {
         connectedClients->insert(make_pair(clientFd, userName));
-        Write(clientFd, "Ok!");
+        Send(clientFd, "Ok!");
       }
       else
       {
-        Write(clientFd, "ERROR2: The password is wrong!");
+        Send(clientFd, "ERROR2: The password is wrong!");
         continue;
       }
     }
@@ -193,12 +193,12 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
             stringstream ss;
             ss << accesDocument.size();
             printf("%lu, %s\n", accesDocument.size(), ss.str().c_str());
-            Write(clientFd, ss.str()); // transmitem catre client numarul de documente existente
+            Send(clientFd, ss.str()); // transmitem catre client numarul de documente existente
 
             // transmitem documentele
             for(auto it = accesDocument.begin(); it != accesDocument.end(); it++)
             {
-              Write(clientFd, *it);
+              Send(clientFd, *it);
             }
 
           }
@@ -210,7 +210,7 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
 
             if(documentsDict->find(documentName) != documentsDict->end())
             {
-              Write(clientFd, "ERROR: File with the same name already exists on server! Choose another filename!");
+              Send(clientFd, "ERROR: File with the same name already exists on server! Choose another filename!");
               continue;
             }
             documentsDict->insert(make_pair(documentName, Document(documentName)));
@@ -218,7 +218,7 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
             string userName = findName->second;
             auto findAcces = clientAcces->find(userName);
             findAcces->second.push_back(documentName);
-            Write(clientFd, "Ok!");
+            Send(clientFd, "Ok!");
           }
     else if(command.compare(0, 6, "remove") == 0)
           {
@@ -268,17 +268,17 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
                 findUserAcces->second.push_back(documentName);
                 auto findDocument = documentsDict->find(documentName);
                 findDocument->second.shared++;
-                Write(clientFd, "OK!");
+                Send(clientFd, "OK!");
               }
               else
               {
-                Write(clientFd, "ERROR0: The specified user has already access to this file.");
+                Send(clientFd, "ERROR0: The specified user has already access to this file.");
               }
               
             }
             else
             {
-              Write(clientFd, "ERROR1: There is no user with the specified username.");
+              Send(clientFd, "ERROR1: There is no user with the specified username.");
             }
           }
     else if(command.compare(0, 4, "open") == 0)
@@ -298,11 +298,11 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
 
                 stringstream ss;
                 ss << lastOpId << " " << doc->second.documentText;
-                Write(clientFd, ss.str());
+                Send(clientFd, ss.str());
               }
               else
               {
-                Write(clientFd, "ERROR: There are already two clients!");
+                Send(clientFd, "ERROR: There are already two clients!");
               }
             }
           }
@@ -333,7 +333,7 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
     string docName = opened_doc->second;
     printf("docName = %s", docName.c_str());
     auto doc = documentsDict->find(docName);
-    doc->second.DisconnectClient(clientFd);
+    doc->second.RemoveClient(clientFd);
     openedDocuments->erase(opened_doc);
   }
 }

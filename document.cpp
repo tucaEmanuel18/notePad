@@ -82,7 +82,7 @@ void Document::ApplyOperation(int fd, string command)
 		}
 		else
 		{
-			Write(client.fd, op.toStr()); // trimitem celuilalt client operatia
+			Send(client.fd, op.toStr()); // trimitem celuilalt client operatia
 			printf("Send op to other client: %d %s\n", client.fd, op.toStr().c_str());
 			hasPeer = true;
 
@@ -100,5 +100,5 @@ void Document::ApplyOperation(int fd, string command)
 	this->lock.unlock(); // serverul nu accepta alta operatie in timpul updatului
 	stringstream ss;
 	ss << op.id << " "<<op.serverId << " " << hasPeer;
-	Write(fd, ss.str());
+	Send(fd, ss.str());
 }
