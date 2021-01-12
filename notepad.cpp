@@ -13,9 +13,7 @@
 #include "hack_connect.h"
 #include "operation.h"
 
-using std::string;
-using std::vector;
-using std::stringstream;
+using namespace std;
 
 
 Notepad::Notepad(QWidget *parent) :

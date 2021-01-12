@@ -13,9 +13,11 @@
 #include <thread>
 #include <sstream>
 #include <mutex>
+#include <algorithm>
 #include "document.h"
 #include "operation.h"
 #include "network_utils.h"
+
 
 using namespace std;
 
@@ -260,15 +262,23 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
             auto findUserAcces = clientAcces->find(userName);
             if(findUserAcces != clientAcces->end())
             {
-              findUserAcces->second.push_back(documentName);
-
-              auto findDocument = documentsDict->find(documentName);
-              findDocument->second.shared++;
-              Write(clientFd, "OK!");
+              auto findDuplicate = find(findUserAcces->second.begin(), findUserAcces->second.end(), documentName);
+              if(findDuplicate == findUserAcces->second.end())
+              {
+                findUserAcces->second.push_back(documentName);
+                auto findDocument = documentsDict->find(documentName);
+                findDocument->second.shared++;
+                Write(clientFd, "OK!");
+              }
+              else
+              {
+                Write(clientFd, "ERROR0: The specified user has already access to this file.");
+              }
+              
             }
             else
             {
-              Write(clientFd, "ERROR: there is no user with the specified username.");
+              Write(clientFd, "ERROR1: There is no user with the specified username.");
             }
           }
     else if(command.compare(0, 4, "open") == 0)

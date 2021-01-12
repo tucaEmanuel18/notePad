@@ -13,18 +13,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     connect_page.cpp \
-        mainwindow.cpp \
     menu.cpp \
-    menupage.cpp \
     notepad.cpp \
     ServerConnection.cpp \
     operation.cpp \
     network_utils.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     connect_page.h \
     menu.h \
-    menupage.h \
     notepad.h \
     hack_connect.h \
     network_utils.h \
@@ -32,8 +29,7 @@ HEADERS  += mainwindow.h \
     operation.h \
     colors.h
 
-FORMS    += mainwindow.ui \
+FORMS    += \
     connect_page.ui \
     menu.ui \
-    menupage.ui \
     notepad.ui

@@ -41,59 +41,7 @@ menu::~menu()
     delete ui;
 }
 
-void menu::onSharePressed(bool enabled)
-{
-    QModelIndexList selection = ui->documentsTable->selectionModel()->selectedRows();
-    if(selection.empty())
-    {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select a document!");
-    }
-    else if(selection.count() > 1)
-    {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select just a document!");
-    }
-    else
-    {
-        bool hasError;
-        do
-        {
-            bool ok;
-            hasError = false;
-            QString result = QInputDialog::getText(this, "Share", "Insert the username of the person you want to share the file with!", QLineEdit::Normal, "", &ok);
-            if(result != NULL)
-            {
-                string shareCommand = "share ";
-                // obtain the file name
-                QModelIndex index = selection.at(0);
-                QString str = ui->documentsTable->model()->data(index).toString();
-                shareCommand += str.toStdString();
 
-                shareCommand += " ";
-
-                // add the friend userName
-                shareCommand += result.toStdString();
-                this->server->WriteCommand(shareCommand);
-
-                string answer;
-                answer = this->server->ReadCommand();
-                string errorMessage = "EROOR";
-                std::size_t found = answer.find(errorMessage);
-
-                if(found == 0)
-                {
-                    QMessageBox messageBox;
-                    messageBox.critical(0, "Error", "There is no user with the specified username");
-                }
-            }
-            else if(ok)
-            {
-                hasError = true;
-            }
-        }while(hasError);
-    }
-}
 void menu::onCreatePressed(bool enabled)
 {
     bool hasError;
@@ -198,6 +146,60 @@ void menu::onDeletePressed(bool enabled)
         this->documents.erase(this->documents.begin() + row);
         this->refreshTable();
    }
+}
+
+void menu::onSharePressed(bool enabled)
+{
+    QModelIndexList selection = ui->documentsTable->selectionModel()->selectedRows();
+    if(selection.empty())
+    {
+        QMessageBox messageBox;
+        messageBox.critical(0,"Error", "Please select a document!");
+    }
+    else if(selection.count() > 1)
+    {
+        QMessageBox messageBox;
+        messageBox.critical(0,"Error", "Please select just a document!");
+    }
+    else
+    {
+        bool hasError;
+        do
+        {
+            bool ok;
+            hasError = false;
+            QString result = QInputDialog::getText(this, "Share", "Insert the username of the person you want to share the file with!", QLineEdit::Normal, "", &ok);
+            if(result != NULL)
+            {
+                string shareCommand = "share ";
+                // obtain the file name
+                QModelIndex index = selection.at(0);
+                QString str = ui->documentsTable->model()->data(index).toString();
+                shareCommand += str.toStdString();
+
+                shareCommand += " ";
+
+                // add the friend userName
+                shareCommand += result.toStdString();
+                this->server->WriteCommand(shareCommand);
+
+                string answer;
+                answer = this->server->ReadCommand();
+                string errorMessage = "ERROR";
+                std::size_t found = answer.find(errorMessage);
+
+                if(found == 0)
+                {
+                   QMessageBox messageBox;
+                   messageBox.critical(0, "Error", "There is no user with the specified username or specified user has already acces to this file.");
+                }
+            }
+            else if(ok)
+            {
+                hasError = true;
+            }
+        }while(hasError);
+    }
 }
 
 void menu::refreshTable()

@@ -27,10 +27,6 @@ private:
     ServerConnection *server;
     static const int PORT = 2000;
 
-
-public:
-signals:
-    void logOut();
 public slots:
     void onCreatePressed(bool enabled);
     void onOpenPressed(bool enabled);

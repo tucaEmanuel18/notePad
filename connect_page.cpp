@@ -1,6 +1,6 @@
 #include "connect_page.h"
 #include "ui_connect_page.h"
-#include "menupage.h"
+#include "menu.h"
 #include <QMessageBox>
 
 connect_page::connect_page(QWidget *parent) :
