@@ -1,13 +1,7 @@
 #ifndef CONNECT_PAGE_H
 #define CONNECT_PAGE_H
 #include "ServerConnection.h"
-#include <QTableWidgetItem>
 #include <QWidget>
-#include <QTableWidget>
-#include <vector>
-
-using std::vector;
-using std::string;
 
 namespace Ui {
 class connect_page;

@@ -1,19 +1,11 @@
 #include "menu.h"
 #include "ui_menu.h"
-#include <iostream>
-#include <QTableWidget>
-#include <QTableView>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QString>
-#include <QTableWidgetItem>
-#include <QErrorMessage>
-#include <QAbstractItemModel>
-#include "notepad.h"
 #include "connect_page.h"
+#include "notepad.h"
+
 menu::menu(QWidget *parent, ServerConnection* sv) : QWidget(parent), ui(new Ui::menu)
 {
     ui->setupUi(this);

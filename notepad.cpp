@@ -1,8 +1,6 @@
 #include <QFileDialog>
 #include <QString>
 #include <QTextStream>
-#include <QTextEdit>
-#include <QPlainTextEdit>
 #include <QMessageBox>
 #include <sstream>
 #include <string.h>
@@ -13,7 +11,6 @@
 #include "operation.h"
 
 using namespace std;
-
 
 Notepad::Notepad(QWidget *parent) : QWidget(parent), ui(new Ui::Notepad) 
 {

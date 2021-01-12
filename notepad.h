@@ -8,7 +8,7 @@
 #include "operation.h"
 #include "ServerConnection.h"
 
-using std::list;
+using namespace std;
 
 
 namespace Ui {
