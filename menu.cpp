@@ -24,11 +24,13 @@ menu::menu(QWidget *parent, ServerConnection* sv) : QWidget(parent), ui(new Ui::
     ui->documentsTable->setColumnWidth(0, 100);
     ui->documentsTable->setHorizontalHeaderLabels(list);
     ui->documentsTable->setRowCount(5);
+    ui->documentsTable->setColumnWidth(0, 500);
 
-    connect(ui->createButton, SIGNAL(clicked(bool)), this, SLOT(onCreatePressed(bool)));
-    connect(ui->openButton, SIGNAL(clicked(bool)), this, SLOT(onOpenPressed(bool)));
-    connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(onDeletePressed(bool)));
-    connect(ui->shareButton, SIGNAL(clicked(bool)), this, SLOT(onSharePressed(bool)));
+    connect(ui->logOutButton, SIGNAL(clicked(bool)), this, SLOT(logOutClicked()));
+    connect(ui->createButton, SIGNAL(clicked(bool)), this, SLOT(CreateClicked(bool)));
+    connect(ui->openButton, SIGNAL(clicked(bool)), this, SLOT(OpenClicked(bool)));
+    connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(DeleteClicked(bool)));
+    connect(ui->shareButton, SIGNAL(clicked(bool)), this, SLOT(ShareClicked(bool)));
     connect(ui->refreshButton, SIGNAL(clicked(bool)), this, SLOT(refreshTable()));
     this->server = sv;
     this->refreshTable();
@@ -39,157 +41,144 @@ menu::~menu()
     delete ui;
 }
 
-
-void menu::onCreatePressed(bool enabled)
+void menu::CreateClicked(bool enabled)
 {
-    bool hasError;
+    bool wait;
     do {
         bool ok;
-        hasError=false;
-
-        QString result = QInputDialog::getText(this, "Notepad", "Insert a name for the file!", QLineEdit::Normal, "", &ok);
-        if(result != NULL)
+        wait=false;
+        QString inputResult = QInputDialog::getText(this, "Notepad", "Insert a name for the file!", QLineEdit::Normal, "", &ok);
+        if(inputResult != NULL)
         {
             string createCommand = "create ";
-            createCommand += result.toStdString();
+            createCommand += inputResult.toStdString();
             this->server->WriteCommand(createCommand);
 
-            string answer;
-            answer = this->server->ReadCommand();
-            string errorMessage = "ERROR";
-            std::size_t found = answer.find(errorMessage);
-
-            if(found == 0)
+            string response;
+            response = this->server->ReadCommand();
+            std::size_t foundError = response.find("ERROR");
+            if(foundError == 0)
             {
-                QMessageBox messageBox;
-                messageBox.critical(0, "Error", "File with the same name already exists! \n Choose another name!");
+                QMessageBox msgForUser;
+                msgForUser.critical(0, "Error", "File with the same name already exists! \n Choose another name!");
                 continue;
             }
             else
             {
-                  this->documents.push_back(new std::string (result.toStdString()));
+                this->documents.push_back(new std::string (inputResult.toStdString()));
             }
         }
         else if(ok)
         {
-            hasError = true;
+            wait = true;
         }
-    }while(hasError);
+    }while(wait);
     this->refreshTable();
 }
 
-void menu::onOpenPressed(bool enabled)
+void menu::OpenClicked(bool enabled)
 {
-    QModelIndexList selection = ui->documentsTable->selectionModel()->selectedRows();
+    QModelIndexList select = ui->documentsTable->selectionModel()->selectedRows();
 
-    if(selection.empty())
+    if(select.empty())
     {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select a document!");
+        QMessageBox msgForUser;
+        msgForUser.critical(0, "Error", "Please select a document!");
+    }
+    else if(select.count() > 1)
+    {
+        QMessageBox msgForUser;
+        msgForUser.critical(0,"Error", "Please select just a document!");
     }
     else
     {
-        for(int i = 0; i < selection.count(); i++)
+        QModelIndex index = select.at(0);
+        int row = index.row();
+        string docName = this->documents[row]->c_str();
+
+        Notepad *notepad = new Notepad();
+        string response = notepad->Open(docName);
+        std::size_t foundError = response.find("ERROR");
+        if(foundError == 0)
         {
-            QModelIndex index = selection.at(i);
-            int row = index.row();
-            string documentName = this->documents[row]->c_str();
-            Notepad *notepad = new Notepad();
-
-            string answer = notepad->Open(documentName);
-            string errorMessage = "ERROR";
-            std::size_t found = answer.find(errorMessage);
-            if(found == 0)
-            {
-                QMessageBox messageBox;
-                messageBox.critical(0, "Error", "File is already edited by two clients!");
-                // close this window
-
-                delete notepad;
-                return;
-            }
-
-            QString docTitle = QString(documentName.c_str());
-            notepad->setWindowTitle(docTitle);
-            notepad->show();
+            QMessageBox msgForUser;
+            msgForUser.critical(0, "Error", "File is already edited by two clients!");
+            delete notepad;
+            return;
         }
+        QString docTitle = QString(docName.c_str());
+        notepad->setWindowTitle(docTitle);
+        notepad->show();
     }
-
 }
 
-void menu::onDeletePressed(bool enabled)
+void menu::DeleteClicked(bool enabled)
 {
-
-    QModelIndexList selection = ui->documentsTable->selectionModel()->selectedRows();
-    if(selection.empty())
+    QModelIndexList select = ui->documentsTable->selectionModel()->selectedRows();
+    if(select.empty())
     {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select a document!");
+        QMessageBox msgForUser;
+        msgForUser.critical(0, "Error", "Please select a document!");
     }
-    else if(selection.count() > 1)
+    else if(select.count() > 1)
     {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select just a document!");
+        QMessageBox msgForUser;
+        msgForUser.critical(0,"Error", "Please select just a document!");
     }
     else
     {
         string deleteCommand = "remove ";
-        QModelIndex index = selection.at(0);
-        QString str = ui->documentsTable->model()->data(index).toString();
-        deleteCommand += str.toStdString();
+        QModelIndex index = select.at(0);
+        QString docName = ui->documentsTable->model()->data(index).toString();
+        deleteCommand += docName.toStdString();
         this->server->WriteCommand(deleteCommand);
 
-        int row = index.row();
-        delete this->documents[row];
-        this->documents.erase(this->documents.begin() + row);
+        int rowIndex = index.row();
+        delete this->documents[rowIndex];
+        this->documents.erase(this->documents.begin() + rowIndex);
         this->refreshTable();
    }
 }
 
-void menu::onSharePressed(bool enabled)
+void menu::ShareClicked(bool enabled)
 {
-    QModelIndexList selection = ui->documentsTable->selectionModel()->selectedRows();
-    if(selection.empty())
+    QModelIndexList select = ui->documentsTable->selectionModel()->selectedRows();
+    if(select.empty())
     {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select a document!");
+        QMessageBox msgForUser;
+        msgForUser.critical(0, "Error", "Please select a document!");
     }
-    else if(selection.count() > 1)
+    else if(select.count() > 1)
     {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", "Please select just a document!");
+        QMessageBox msgForUser;
+        msgForUser.critical(0, "Error", "Please select just a document!");
     }
     else
     {
-        bool hasError;
+        bool wait;
         do
         {
             bool ok;
-            hasError = false;
-            QString result = QInputDialog::getText(this, "Share", "Insert the username of the person you want to share the file with!", QLineEdit::Normal, "", &ok);
-            if(result != NULL)
+            wait = false;
+            QString inputResult = QInputDialog::getText(this, "Share", "Insert the username of the person you want to share the file with!", QLineEdit::Normal, "", &ok);
+            if(inputResult != NULL)
             {
                 string shareCommand = "share ";
                 // obtain the file name
-                QModelIndex index = selection.at(0);
+                QModelIndex index = select.at(0);
                 QString str = ui->documentsTable->model()->data(index).toString();
                 shareCommand += str.toStdString();
-
                 shareCommand += " ";
-
                 // add the friend userName
-                shareCommand += result.toStdString();
+                shareCommand += inputResult.toStdString();
                 this->server->WriteCommand(shareCommand);
 
-                string response;
-                response = this->server->ReadCommand();
-                string errorMessage = "ERROR";
-                std::size_t found = response.find(errorMessage);
-
-                if(found == 0)
+                string response = this->server->ReadCommand();
+                size_t foundError = response.find("ERROR");
+                if(foundError == 0)
                 {
-                    char ch = response[5];
                     QMessageBox msgForUser;
+                    char ch = response.at(5);
                     if(ch == '1')
                     {
                         msgForUser.critical(0, "Error", "There is no user with the specified username.!");
@@ -202,52 +191,59 @@ void menu::onSharePressed(bool enabled)
             }
             else if(ok)
             {
-                hasError = true;
+                wait = true;
             }
-        }while(hasError);
+        }while(wait);
     }
 }
 
 void menu::refreshTable()
 {
-    for(auto documentFile : this->documents) {
-        delete documentFile;
+    for(auto doc : this->documents)
+    {
+        delete doc;
     }
-
     this->documents.clear();
-    int code;
-    if ((code = this->server->WriteCommand("list")) != 0) {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error", strerror(code));
+
+    int errCod;
+    if ((errCod = this->server->WriteCommand("list")) != 0)
+    {
+        QMessageBox msgForUser;
+        msgForUser.critical(0,"Error", strerror(errCod));
         return;
     }
-    int size = atoi(this->server->ReadCommand().c_str());
-    for(int i=0;i<size; i++) {
-        string *documentName = new string;
-        documentName->append(this->server->ReadCommand());
-        this->documents.push_back(documentName);
+    int length = atoi(this->server->ReadCommand().c_str());
+    for(int i = 0; i < length; ++i)
+    {
+        string docName = this->server->ReadCommand();
+        string * ptrDocName = new string;
+        ptrDocName->append(docName);
+        this->documents.push_back(ptrDocName);
     }
 
-    for(auto widget : this->documentTableItem) {
-        delete widget;
+    for(auto w : this->documentTableItem)
+    {
+        delete w; // w - widget
     }
     this->documentTableItem.clear();
 
-    if(this->documents.empty()){
+    if(this->documents.empty())
+    {
         ui->documentsTable->setRowCount(0);
         return;
     }
 
     ui->documentsTable->setRowCount(this->documents.size());
     ui->documentsTable->setColumnWidth(0, 500);
-    for(unsigned int i = 0; i < this->documents.size(); i++){
-        QTableWidgetItem *item = new QTableWidgetItem(this->documents[i]->c_str());
-        ui->documentsTable->setItem(i, 0, item);
-        this->documentTableItem.push_back(item);
+    for(unsigned int i = 0; i < this->documents.size(); i++)
+    {
+        QTableWidgetItem *tableItem = new QTableWidgetItem(this->documents[i]->c_str());
+        ui->documentsTable->setItem(i, 0, tableItem);
+        this->documentTableItem.push_back(tableItem);
     }
 }
 
-void menu::on_logOutButton_clicked()
+void menu::logOutClicked()
 {
     connect_page *c_page = new connect_page();
     c_page->show();

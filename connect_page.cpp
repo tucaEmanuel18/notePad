@@ -44,12 +44,12 @@ void connect_page::on_signButton_clicked()
         string response;
         response = this->server->ReadCommand();
         string errorMessage = "ERROR";
-        std::size_t found = response.find(errorMessage);
+        std::size_t foundError = response.find(errorMessage);
 
-        if(found == 0)
+        if(foundError == 0)
         {
-            QMessageBox messageBox;
-            messageBox.critical(0, "Error", " There is already an account with this name! \n Choose another name!");
+            QMessageBox msgForUser;
+            msgForUser.critical(0, "Error", " There is already an account with this name! \n Choose another name!");
         }
         else
         {
@@ -78,10 +78,9 @@ void connect_page::on_logButton_clicked()
 
         string response;
         response = this->server->ReadCommand();
-        string errMsg = "ERROR";
-        std::size_t found = response.find(errMsg);
+        std::size_t foundError = response.find("ERROR");
 
-        if(found == 0)
+        if(foundError == 0)
         {
             char ch = response[5];
             QMessageBox msgForUser;

@@ -47,8 +47,7 @@ string Notepad::Open(string docName)
     string responseMsg = this->server->ReadCommand();
 
     // receive response from server
-    string errMsg = "ERROR";
-    std::size_t foundError = responseMsg.find(errMsg);
+    std::size_t foundError = responseMsg.find("ERROR");
 
     if(foundError == string::npos)
     {
