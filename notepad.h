@@ -25,7 +25,7 @@ public:
     string Open(string documentName);
 
 signals:
-    void onPeerOperation(); //sends received operation from peer
+    void signal_peerOp();
 
 protected:
     void closeEvent ( QCloseEvent * event )
@@ -33,27 +33,26 @@ protected:
         this->server->WriteCommand("close");
         this->server->CloseServerConnection();
     }
-
 private:
     static const int PORT = 2000;
     ServerConnection *server;
-    QString previousText;
-    void ClientThreadLoop();
+    QString previousContent;
     list<Operation> toApply;
     list<Operation> history;
-    list<Operation> pendingOperations;// operation send to server but not confirmed (without an id)
+    list<Operation> waitingOpList; // in this list we will retain the operations send to server but not confirmed (without an id)
+    void PeerThreadLoop();
 
 private slots:
-
-    void slot_onPeerOperation();
-
+    void on_textEdit_textChanged();
     void on_pushButton_clicked();
 
-    void on_textEdit_textChanged();
+    void slot_peerOp();
+
 
 private:
+    int lastId;
     Ui::Notepad *ui;
-    int prevId;
+
 };
 
 #endif // NOTEPAD_H

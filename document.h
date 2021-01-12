@@ -31,7 +31,7 @@ public:
 	Document(string name);
 
 	int AddClient(int fd);
-	void DisconnectClient(int fd);
+	void RemoveClient(int fd);
 
 	void ApplyOperation(int fd, string command);
 };

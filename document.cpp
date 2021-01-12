@@ -35,7 +35,7 @@ int Document::AddClient(int fd)
 	return prevId;
 }
 
-void Document::DisconnectClient(int fd)
+void Document::RemoveClient(int fd)
 {
 	auto found = this->clients.end();
 	for(auto it = this->clients.begin(); it != this->clients.end(); it++)

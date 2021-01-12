@@ -16,190 +16,194 @@
 using namespace std;
 
 
-Notepad::Notepad(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Notepad) {
+Notepad::Notepad(QWidget *parent) : QWidget(parent), ui(new Ui::Notepad) 
+{
     ui->setupUi(this);
-    this->setWindowTitle("New Document");
+    this->setWindowTitle("New Text Document");
     this->server = new ServerConnection(Notepad::PORT);
-    this->prevId = 0;
-    connect(this, SIGNAL(onPeerOperation()), this, SLOT(slot_onPeerOperation()));
-    int code;
-    if((code = this->server->Connect()) != 0) {
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error",strerror(code));
-        // close this window
+    this->lastId = 0;
+    connect(this, SIGNAL(signal_peerOp()), this, SLOT(slot_peerOp()));
+
+    int cod;
+    if((cod = this->server->Connect()) != 0)
+    {
+        // if the connection fail throw error and close window
+        QMessageBox msgForUser;
+        msgForUser.critical(0,"Error",strerror(cod));
         return;
     }
 }
 
-Notepad::~Notepad() {
+Notepad::~Notepad()
+{
     delete ui;
 }
 
-string Notepad::Open(string documentName) {
-    string openCommand = "open " + documentName;
+string Notepad::Open(string docName)
+{
+    // build and send command for server
+    string openCommand = "open " + docName;
     this->server->WriteCommand(openCommand);
 
-    string answer = this->server->ReadCommand();
+    string responseMsg = this->server->ReadCommand();
 
-    string errorMessage = "ERROR";
-    std::size_t found = answer.find(errorMessage);
+    // receive response from server
+    string errMsg = "ERROR";
+    std::size_t foundError = responseMsg.find(errMsg);
 
-    if(found == string::npos) {
-        new std::thread([this](){
-            this->ClientThreadLoop();
-        });
+    if(foundError == string::npos)
+    {
+        new std::thread([this](){this->PeerThreadLoop();});
 
-        string space = " ";
-        auto found = answer.find(space);
-        string prevIdStr = answer.substr(0, found);
-        string text = answer.substr(found + 1);
+        auto pos = responseMsg.find(" ");
+        string lastIdStr = responseMsg.substr(0, pos);
+        string content = responseMsg.substr(pos + 1);
         this->ui->textEdit->setReadOnly(true);
-        this->ui->textEdit->setText(QString(text.c_str()));
+        this->ui->textEdit->setText(QString(content.c_str()));
         this->ui->textEdit->setReadOnly(false);
 
-        stringstream ss(prevIdStr);
-        ss >> this->prevId;
+        stringstream ss(lastIdStr);
+        ss >> this->lastId;
     }
-
-    return answer;
+    return responseMsg;
 }
 
 
 void Notepad::on_pushButton_clicked()
 {
-    QString filename;
-    QString defaulFileName = windowTitle();
-    defaulFileName.append(".txt");
-
-    filename = QFileDialog::getSaveFileName(this, "Save Document", defaulFileName);
-
-    QFile saveFile(filename);
-    if(saveFile.open(QFile::WriteOnly | QFile::Text)) {
-
-        QTextStream out(&saveFile);
-        out << ui->textEdit->toPlainText();
-        saveFile.flush();
-        saveFile.close();
+    QString docName;
+    QString defDocName = windowTitle();
+    defDocName.append(".txt");
+    docName = QFileDialog::getSaveFileName(this, "Save Document", defDocName);
+    QFile saveDoc(docName);
+    if(saveDoc.open(QFile::WriteOnly | QFile::Text))
+    {
+        QTextStream content(&saveDoc);
+        content << ui->textEdit->toPlainText();
+        saveDoc.flush();
+        saveDoc.close();
     }
-
 }
-
-
 
 void Notepad::on_textEdit_textChanged()
 {
-    QString currentText;
-    currentText = ui->textEdit->toPlainText();
+    QString currentContent;
+    currentContent = ui->textEdit->toPlainText();
 
-    if(this->ui->textEdit->isReadOnly()) {
-        this->previousText = currentText;
+    if(this->ui->textEdit->isReadOnly())
+    {
+        this->previousContent = currentContent;
         return;
     }
-
     vector<Operation> operations;
 
-    for(int i=0; i<this->previousText.size() && i<currentText.size(); i++) {
-        if(this->previousText[i] != currentText[i]) {
-            Operation deleteOperation = Operation(false, this->prevId, i, this->previousText[i].toLatin1());
-            this->pendingOperations.push_back(deleteOperation);
-            this->server->WriteCommand(deleteOperation.toStr());
+    for(int index = 0; index < this->previousContent.size() && index < currentContent.size(); index++)
+    {
+        // cazul in care s-a inlocuit un caracter cu alt caracter
+        if(this->previousContent[index] != currentContent[index])
+        {
+            Operation deleteOp = Operation(false, this->lastId, index, this->previousContent[index].toLatin1());
+            this->waitingOpList.push_back(deleteOp);
+            this->server->WriteCommand(deleteOp.toStr());
 
-
-            Operation insertOperation = Operation(true, this->prevId, i, currentText[i].toLatin1());
-            this->pendingOperations.push_back(insertOperation);
-            this->server->WriteCommand(insertOperation.toStr());
-        }
-
-
-    }
-    if(this->previousText.size() > currentText.size()) {
-        for(int i = currentText.size(); i < this->previousText.size(); i++) {
-
-            Operation deleteOperation = Operation(false, this->prevId, currentText.size(), this->previousText[i].toLatin1());
-            this->pendingOperations.push_back(deleteOperation);
-            this->server->WriteCommand(deleteOperation.toStr());
-
+            Operation insertOp = Operation(true, this->lastId, index, currentContent[index].toLatin1());
+            this->waitingOpList.push_back(insertOp);
+            this->server->WriteCommand(insertOp.toStr());
         }
     }
-    if(this->previousText.size() < currentText.size()) {
 
-        for(int i = this->previousText.size(); i < currentText.size(); i++) {
-
-            Operation insertOperation = Operation(true, this->prevId, i, currentText[i].toLatin1());
-            this->pendingOperations.push_back(insertOperation);
-            this->server->WriteCommand(insertOperation.toStr());
-
+    if(this->previousContent.size() > currentContent.size())
+    {
+        // cazul in care s-au sters caractere de la final
+        for(int index = currentContent.size(); index < this->previousContent.size(); index++)
+        {
+            Operation deleteOp = Operation(false, this->lastId, currentContent.size(), this->previousContent[index].toLatin1());
+            this->waitingOpList.push_back(deleteOp);
+            this->server->WriteCommand(deleteOp.toStr());
+        }
+    }
+    if(this->previousContent.size() < currentContent.size())
+    {
+        // cazul in care s-au adaugat caractere la finalul contentului
+        for(int index = this->previousContent.size(); index < currentContent.size(); index++)
+        {
+            Operation insertOp = Operation(true, this->lastId, index, currentContent[index].toLatin1());
+            this->waitingOpList.push_back(insertOp);
+            this->server->WriteCommand(insertOp.toStr());
         }
 
     }
-    this->previousText = currentText;
+    this->previousContent = currentContent;
 }
 
-void Notepad::ClientThreadLoop() {
-
-    while(1) {
-        string msg;
-        try {
-            msg = this->server->ReadCommand();
+void Notepad::PeerThreadLoop()
+{
+    while(1)
+    {
+        string fromPeerMsg;
+        try
+        {
+            fromPeerMsg = this->server->ReadCommand();
         }
-        catch(std::ios_base::failure error){
-            QMessageBox messageBox;
-            messageBox.critical(0,"Error", error.what());
-
+        catch(std::ios_base::failure err)
+        {
+            QMessageBox msgForUser;
+            msgForUser.critical(0, "Error", err.what());
         }
-        if(msg.compare(0, 6, "insert") ==0 || (msg.compare(0, 6, "delete")) == 0) {
-            Operation operation = Operation(msg);
-            if(updateOperation(this->history, operation)) {
+
+        if(fromPeerMsg.compare(0, 6, "insert") == 0 || (fromPeerMsg.compare(0, 6, "delete")) == 0)
+        {
+            Operation operation = Operation(fromPeerMsg);
+            if(updateOperation(this->history, operation))
+            {
                 this->toApply.push_back(operation);
-                this->onPeerOperation();
+                this->signal_peerOp();
             }
         }
-        else {
-            stringstream ss(msg);
-
-            int id, serverId;
+        else
+        {
+            stringstream ss(fromPeerMsg);
             bool hasPeer;
+            int serverId, id;
             ss >> id >> serverId >> hasPeer;
 
-            Operation op = *this->pendingOperations.begin();
+            Operation op = *this->waitingOpList.begin();
             op.id = id;
             op.serverId = serverId;
 
-            if(hasPeer) {
-                // we should remember the operations if there is a peer
-                // because he isn't up to date
+            if(hasPeer) // if there is a peer we should remember this op because he isn't up to date
+            {
                 this->history.push_back(op);
             }
-            else {
-                // if there is no peer then there is no need to remember what we did
+            else // We no need to remember what we did if there is no peer
+            {
                 this->history.clear();
             }
 
-            this->pendingOperations.pop_front();
+            this->waitingOpList.pop_front();
         }
     }
 }
 
 
-void Notepad::slot_onPeerOperation() {
+void Notepad::slot_peerOp()
+{
     this->ui->textEdit->setReadOnly(true);
+    QString qContent = this->ui->textEdit->toPlainText();
+    string content = qContent.toStdString();
 
-    QString qtext = this->ui->textEdit->toPlainText();
-    string text = qtext.toStdString();
-
-    while(!this->toApply.empty()) {
-        Operation op = *this->toApply.begin();
-        if (updateOperation(this->history, op, true)) {
-            op.applyOperation(text); //apply operation on current text
+    while(!this->toApply.empty())
+    {
+        Operation operation = *this->toApply.begin();
+        if (updateOperation(this->history, operation, true))
+        {
+            operation.applyOperation(content); //apply operation on current text
         }
-        this->prevId = op.id;
+        this->lastId = operation.id;
         this->toApply.pop_front();
     }
 
-    this->ui->textEdit->setText(QString(text.c_str()));
-
+    this->ui->textEdit->setText(QString(content.c_str()));
     this->ui->textEdit->setReadOnly(false); //allow user to continue editing
 }
 
