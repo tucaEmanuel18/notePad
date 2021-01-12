@@ -115,7 +115,8 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
 {
 
   printf("[SERVER THREAD] Thread with fd %d started \n", clientFd);
-  while(1)
+  bool close = false;
+  while(!close)
   {
     string command;
     try
@@ -310,12 +311,17 @@ void clientLoop(int clientFd, map<string, string>* clientsDict, map<int, string>
                   }
                 }
             }
+      else if (command.compare(0, 5, "close") == 0)
+      {
+        close = true;
+      }
   }
   printf("Client disconected: %d\n", clientFd);
   auto opened_doc = openedDocuments->find(clientFd);
   if(opened_doc != openedDocuments->end())
-  {
+  { 
     string docName = opened_doc->second;
+    printf("docName = %s", docName.c_str());
     auto doc = documentsDict->find(docName);
     doc->second.DisconnectClient(clientFd);
     openedDocuments->erase(opened_doc);

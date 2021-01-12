@@ -37,6 +37,8 @@ public slots:
     void onDeletePressed(bool enabled);
     void onSharePressed(bool enabled);
     void refreshTable();
+private slots:
+    void on_logOutButton_clicked();
 };
 
 #endif // MENU_H

@@ -235,3 +235,8 @@ void menu::refreshTable()
         this->documentTableItem.push_back(item);
     }
 }
+
+void menu::on_logOutButton_clicked()
+{
+
+}

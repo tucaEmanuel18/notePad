@@ -28,7 +28,9 @@ signals:
     void onPeerOperation(); //sends received operation from peer
 
 protected:
-    void closeEvent ( QCloseEvent * event ) {
+    void closeEvent ( QCloseEvent * event )
+    {
+        this->server->WriteCommand("close");
         this->server->CloseServerConnection();
     }
 

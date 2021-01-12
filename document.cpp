@@ -42,11 +42,10 @@ void Document::DisconnectClient(int fd)
 	{
 		if(it->fd == fd)
 		{
-			found == it;
+			found = it;
 			break;
 		}
 	}
-
 	if(found != this->clients.end())
 	{
 		this->clients.erase(found);
