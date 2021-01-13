@@ -14,6 +14,7 @@ connect_page::connect_page(QWidget *parent) : QWidget(parent), ui(new Ui::connec
         // if the connection fail throw error and close window
         QMessageBox msgForUser;
         msgForUser.critical(0,"Error",strerror(cod));
+        //msgForUser.setStyleSheet("background-color:#0F1418;color:white;font-size:11pt");
         return;
     }
 }
@@ -31,7 +32,10 @@ void connect_page::on_signButton_clicked()
 
     if(userName.length() < 6 || password.length() < 6)
     {
-        QMessageBox::information(this, "SignIn", "Username and password must be at least 6 characters long!");
+        QMessageBox msgForUser;
+        msgForUser.setStyleSheet("QLabel{ color: white}");
+        msgForUser.information(this, "SignUp", "Username and password must be at least 6 characters long!");
+
     }
     else
     {
@@ -95,7 +99,7 @@ void connect_page::on_logButton_clicked()
         }
         else
         {
-            menu *menuWidget = new menu(nullptr, this->server);
+            menu *menuWidget = new menu(nullptr, this->server, userName.toStdString());
             menuWidget->show();
             hide();
         }

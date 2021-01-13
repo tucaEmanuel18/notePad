@@ -16,7 +16,7 @@ class menu : public QWidget
     Q_OBJECT
 
 public:
-    explicit menu(QWidget *parent = nullptr, ServerConnection *sv = nullptr);
+    explicit menu(QWidget *parent = nullptr, ServerConnection *sv = nullptr, string userName = nullptr);
     ~menu();
 
 private:

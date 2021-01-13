@@ -204,3 +204,27 @@ void Notepad::slot_peerOp()
     this->ui->editBox->setReadOnly(false);
 }
 
+void Notepad::on_copyButton_clicked()
+{
+     ui->editBox->copy();
+}
+
+void Notepad::on_pasteButton_clicked()
+{
+    ui->editBox->paste();
+}
+
+void Notepad::on_cutButton_clicked()
+{
+    ui->editBox->cut();
+}
+
+void Notepad::on_undoButton_clicked()
+{
+     ui->editBox->undo();
+}
+
+void Notepad::on_redoButton_clicked()
+{
+     ui->editBox->redo();
+}

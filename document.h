@@ -34,3 +34,7 @@ public:
 	void RemoveClient(int fd);
 	int AddClient(int fd);
 };
+
+
+// Acest .h si .cpp-ul asociat a fost inspirat de fisierul document.h si .cpp-ul asociat 
+// din cadrul proiectului urmator: https://github.com/buterchiandreea/CollaborativeNotepad.git

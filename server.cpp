@@ -59,7 +59,7 @@ int serverLoop(string serverAdr, int port, int backlog)
 
     // utilizarea optiunii SO_REUSEADDR
     int on = 1;
-    setsockopt(sd,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on));
+    setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on,sizeof(on));
 
     //pregatirea structurilor de date
     bzero (&server, sizeof (server));

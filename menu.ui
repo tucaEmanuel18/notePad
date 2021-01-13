@@ -13,13 +13,39 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(211, 215, 207);</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QPushButton" name="logOutButton">
+       <property name="font">
+        <font>
+         <family>Tibetan Machine Uni</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>true</underline>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(52, 101, 164);</string>
+       </property>
        <property name="text">
         <string>Log Out</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/icons/icons/logout.svg</normaloff>:/icons/icons/logout.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>25</width>
+         <height>25</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -63,8 +89,30 @@
              <height>50</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tibetan Machine Uni</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(52, 101, 164);
+color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Create</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icons/icons/add-file.png</normaloff>:/icons/icons/add-file.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -82,8 +130,30 @@
              <height>50</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tibetan Machine Uni</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(52, 101, 164);</string>
+           </property>
            <property name="text">
             <string>Open</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icons/icons/pen.png</normaloff>:/icons/icons/pen.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -101,8 +171,30 @@
              <height>50</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tibetan Machine Uni</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(52, 101, 164);
+color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Delete</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icons/icons/trash.png</normaloff>:/icons/icons/trash.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -120,8 +212,30 @@
              <height>50</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tibetan Machine Uni</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(52, 101, 164);</string>
+           </property>
            <property name="text">
             <string>Share</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icons/icons/share.png</normaloff>:/icons/icons/share.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -145,31 +259,86 @@
              <height>50</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tibetan Machine Uni</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(52, 101, 164);
+color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Refresh</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icons/icons/refresh.png</normaloff>:/icons/icons/refresh.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+          <widget class="QLabel" name="userName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
+           <property name="minimumSize">
             <size>
-             <width>10</width>
+             <width>20</width>
              <height>20</height>
             </size>
            </property>
-          </spacer>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Tibetan Machine Uni</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgba(191, 64, 64, 0);
+color: rgb(46, 52, 54);</string>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QTableWidget" name="documentsTable"/>
+        <widget class="QTableWidget" name="documentsTable">
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>11</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -177,6 +346,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

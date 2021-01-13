@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/logo.png</file>
+        <file>icons/backgroundMain.png</file>
+        <file>icons/cancel.svg</file>
+        <file>icons/copy.svg</file>
+        <file>icons/diskette.svg</file>
+        <file>icons/down-arrow.svg</file>
+        <file>icons/logout.svg</file>
+        <file>icons/paste.svg</file>
+        <file>icons/redo.svg</file>
+        <file>icons/scissors.svg</file>
+        <file>icons/undo.svg</file>
+        <file>icons/add-user.png</file>
+        <file>icons/log-in.png</file>
+        <file>icons/add-file.png</file>
+        <file>icons/pen.png</file>
+        <file>icons/refresh.png</file>
+        <file>icons/share.png</file>
+        <file>icons/trash.png</file>
+        <file>icons/editorBackground.png</file>
+        <file>icons/tableBorder.png</file>
+    </qresource>
+</RCC>

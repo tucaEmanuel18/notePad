@@ -13,22 +13,253 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/icons/icons/logo.png</normaloff>:/icons/icons/logo.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="downloadButton">
-       <property name="text">
-        <string>Download</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="downloadButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/icons/icons/editorBackground.png);
+color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string>Download</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/icons/down-arrow.svg</normaloff>:/icons/icons/down-arrow.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="copyButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/icons/icons/editorBackground.png);
+color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string>Copy</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/icons/copy.svg</normaloff>:/icons/icons/copy.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pasteButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/icons/icons/editorBackground.png);
+color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string>Paste</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/icons/paste.svg</normaloff>:/icons/icons/paste.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>39</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cutButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/icons/icons/editorBackground.png);
+color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string>Cut</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/icons/scissors.svg</normaloff>:/icons/icons/scissors.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="undoButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/icons/icons/editorBackground.png);
+color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string>Undo</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/icons/undo.svg</normaloff>:/icons/icons/undo.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="redoButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tibetan Machine Uni</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(255, 255, 255);
+background-image: url(:/icons/icons/editorBackground.png);</string>
+         </property>
+         <property name="text">
+          <string>Redo</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icons/icons/redo.svg</normaloff>:/icons/icons/redo.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QTextEdit" name="editBox">
        <property name="font">
         <font>
-         <weight>50</weight>
-         <bold>false</bold>
+         <family>Tlwg Typewriter</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="cursor" stdset="0">
@@ -40,12 +271,28 @@
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);
+border-color: rgb(143, 89, 2);
+background-image: url(:/icons/icons/editorBackground.png);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="lineWidth">
+        <number>4</number>
+       </property>
+       <property name="midLineWidth">
+        <number>0</number>
+       </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

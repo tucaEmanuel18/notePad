@@ -49,6 +49,18 @@ private slots:
     void slot_peerOp();
 
 
+    void on_pushButton_clicked();
+
+    void on_copyButton_clicked();
+
+    void on_pasteButton_clicked();
+
+    void on_cutButton_clicked();
+
+    void on_undoButton_clicked();
+
+    void on_redoButton_clicked();
+
 private:
     int lastId;
     Ui::Notepad *ui;

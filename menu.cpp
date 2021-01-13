@@ -6,7 +6,7 @@
 #include "connect_page.h"
 #include "notepad.h"
 
-menu::menu(QWidget *parent, ServerConnection* sv) : QWidget(parent), ui(new Ui::menu)
+menu::menu(QWidget *parent, ServerConnection* sv, string userName) : QWidget(parent), ui(new Ui::menu)
 {
     ui->setupUi(this);
     this->setWindowTitle("Menu");
@@ -18,6 +18,7 @@ menu::menu(QWidget *parent, ServerConnection* sv) : QWidget(parent), ui(new Ui::
     ui->documentsTable->setRowCount(5);
     ui->documentsTable->setColumnWidth(0, 500);
 
+    ui->userName->setText(userName.c_str());
     connect(ui->logOutButton, SIGNAL(clicked(bool)), this, SLOT(logOutClicked()));
     connect(ui->createButton, SIGNAL(clicked(bool)), this, SLOT(CreateClicked(bool)));
     connect(ui->openButton, SIGNAL(clicked(bool)), this, SLOT(OpenClicked(bool)));

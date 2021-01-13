@@ -63,7 +63,7 @@ void Document::ApplyOperation(int fd, string command)
 	{
 		operation.applyOperation(this->content);
 	}
-	this->lock.unlock(); // serverul nu accepta alta operatie in timpul updatului
+	this->lock.unlock(); // serverul nu accepta alta operatie in timpul update - ului
 	stringstream ss;
 	ss << operation.id << " "<<operation.serverId << " " << hasPeer;
 	Send(fd, ss.str());

@@ -32,3 +32,6 @@ FORMS    += \
     connect_page.ui \
     menu.ui \
     notepad.ui
+
+RESOURCES += \
+    resource.qrc
